@@ -1,0 +1,27 @@
+
+
+    Step1: compile sqlite3.c to sqlite3.o by gcc
+    Step2: compile your c++ code together with sqlite3.o by g++
+
+My makefile for sqlite shell and c++ api test:
+
+  1 CXX = g++
+  2 cc = gcc
+  3 
+  4 LIB = -lpthread -ldl
+  5 BIN = sqlite apiTest
+  6 
+  7 all : $(BIN)
+  8 sqlite : sqlite3.c shell.c
+  9     $(cc) -o $@ $^ $(LIB) 
+ 10 apiTest : apiTest.cpp sqlite3.o
+ 11     $(CXX) -o $@ $^ $(LIB) 
+ 12 sqlite3.o : sqlite3.c
+ 13     $(cc) -o $@ -c $^
+ 14 
+ 15 clean :
+ 16     rm -f $(BIN)
+ 17 
+ 18 .PHONY: all, clean
+
+
