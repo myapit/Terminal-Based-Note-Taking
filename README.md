@@ -8,4 +8,4 @@ Note taking from terminal or command prompt.
 
 
 ### How to compile SQLITE support
-``` compile sqlite.c with gcc -c to produce .so file
+```compile sqlite.c with gcc -c to produce .so file
