@@ -1,23 +1,45 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-// include termminal color from  ikalnytskyi-termcolor (github) 
+#include <algorithm>
+#include <vector>
+
+// include terminal color from  ikalnytskyi-termcolor (github) 
 #include "termcolor.hpp"
+#include "sqlitelib/sqlite3.h"
+
 
 namespace tc = termcolor;
 
 /* Variabled Declaration */
-extern char   __BUILD_DATE;
-extern char   __BUILD_VERSION;
+extern char __BUILD_DATE;
+extern char __BUILD_VERSION;
+
+const char* DBName = "example.db";
 
 extern const std::string TBNT_VERSION = "v0.1";
 extern const auto BOLD = tc::bold;
 extern const auto RST = tc::reset;
 char intChoice;
 
-/* Function Decleration */
-bool MainMenu();
 
+sqlite3* DB;
+char* messaggeError;
+int exitSQL = sqlite3_open(DBName, &DB);
+
+
+/* Function Declaretion */
+bool MainMenu();
+void ClearScreen();
+void DisplayLogo();
+void SubScreen();
+void ListNotes();
+int insertSQL(std::string);
+bool string_compare(const std::string& , const std::string&);
+int case_insensitive_match(std::string , std::string);
+
+
+/* Function Definitions */
 void ClearScreen()
 {
     std::cout.flush();
@@ -109,14 +131,100 @@ bool MainMenu()
     return true;
 }
 
-int main()
+bool string_compare(const std::string& a, const std::string& b)
 {
-   while(!MainMenu())
+        return std::equal(a.begin(), a.end(), b.begin(), b.end(),
+                [](char a, char b) {
+                    return tolower(a) == tolower(b);
+                });
+}
+
+int case_insensitive_match(std::string s1, std::string s2) 
+{
+	// Credit : https://www.tutorialspoint.com/case-insensitive-string-comparison-in-cplusplus
+   //convert s1 and s2 into lower case strings
+    std::transform(s1.begin(), s1.end(), s1.begin(), ::tolower);
+    std::transform(s2.begin(), s2.end(), s2.begin(), ::tolower);
+   if(s1.compare(s2) == 0)
+      return 1; //The strings are same
+   return 0; //not matched
+}
+
+int insertSQL(std::string sqlText)
+{
+    std::string sqlQuery("INSERT INTO notes(note) VALUES('" + sqlText + "')");
+    exitSQL = sqlite3_exec(DB, sqlQuery.c_str(), NULL, 0, &messaggeError);
+    if (exitSQL != SQLITE_OK) 
     {
-        //std::cout << "Program Terminated.\n";
-        ClearScreen();
-        DisplayLogo();
+        std::cerr << "Error Insert" << std::endl;
+        sqlite3_free(messaggeError);
     }
+    return 0;
+}
+
+void newNote()
+{
+    std::string line;
+    //std::vector<std::string> v;
+    std::string data="";
+	while(std::getline(std::cin, line)){
+    	if (std::cin.eof())//line.empty()){
+        	break;
+    	
+        data.append(line+"\n");
+    	//v.push_back(line);
+	}
+    
+    
+    //std::vector<std::string>::iterator it;
+
+	//for (it = v.begin(); it != v.end(); it++)
+    //	std::cout << *it << '\n';
+	
+    //std::cout << data;
+    insertSQL(data);
+    std::cout << ">> end new note\n";
+    /*
+    std::string note;
+    std::cin.ignore();
+    while(getline(std::cin, note))
+    {
+        if (std::cin.eof())
+            break;
+    }
+    std::cout << note << std::endl;
+    */
+}
+
+
+/* Main Program */
+int main(int argc, char* argv[])
+{
+    if (argc == 1 )
+    {
+        while(!MainMenu())
+        {
+            //std::cout << "Program Terminated.\n";
+            ClearScreen();
+            DisplayLogo();
+        }
+    } else {
+        std::string argMenu(argv[1]);
+        if ( string_compare(argMenu, "list"))
+		{
+            std::cout << "List all notes\n";
+            newNote();
+        }
+        
+        if ( string_compare(argMenu, "new"))
+        {
+            std::cout << "New Note\n";
+            newNote();
+        }
+        
+    }
+    
+    /* BEGIN : Footer */
     std::cout << "N/D : " << (unsigned long)&__BUILD_VERSION << "/" <<  (unsigned long) &__BUILD_DATE << std::endl;
     //std::ostringstream ss;
     //ss << std::left << std::setfill(' ') << std::setw(10) << 123;
