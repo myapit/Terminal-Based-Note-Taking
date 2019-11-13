@@ -56,9 +56,9 @@ void DisplayLogo()
     std::ostringstream ss;
     ss << std::setfill(' ');
 
-	std::cout << ss.str() << std::setw(15) << tc::cyan << BOLD << " ╔╦╗╔╗ ╔╗╔╔╦╗ " << RST << std::endl
+    std::cout << ss.str() << std::setw(15) << tc::cyan << BOLD << " ╔╦╗╔╗ ╔╗╔╔╦╗ " << RST << std::endl
               << ss.str() << std::setw(15) << tc::cyan << BOLD << "  ║ ╠╩╗║║║ ║  " << RST << std::endl
-	          << ss.str() << std::setw(15) << tc::cyan << BOLD << "  ╩ ╚═╝╝╚╝ ╩  " << TBNT_VERSION << RST << std::endl;
+              << ss.str() << std::setw(15) << tc::cyan << BOLD << "  ╩ ╚═╝╝╚╝ ╩  " << TBNT_VERSION << RST << std::endl;
     std::cout << ss.str() << std::setw(10) << tc::magenta << BOLD <<"Terminal-Based Note Taking" << RST << std::endl << std::flush;  
     std::cout << std::endl;
 }
